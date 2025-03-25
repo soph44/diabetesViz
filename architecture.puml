@@ -1,0 +1,21 @@
+@startuml dataPipeline
+
+skinparam linetype polyline
+skinparam nodesep 100
+
+actor User
+
+rectangle Sources as "Data Source(s)"
+rectangle ETL as "Airflow"
+database DW as "PostgreSQL"
+rectangle BI as "Tableau"
+rectangle ML as "Databricks"
+
+Sources ---> ETL : "ETL DAGs"
+ETL ---> DW : "Preprocessing & Analysis"
+DW <---> BI : "Query Data"
+DW ---> ML : "ML Analyis"
+BI --> User : "Existing Data Trends"
+ML --> User : "Export Predictive Model"
+
+@enduml
