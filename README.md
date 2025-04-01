@@ -5,6 +5,9 @@ Architecture Diagram:
 ![Architecture Diagram](image.png)
 
 Docker Containers and Dependencies:
+<br>
 -Airflow (ETL orchestrator and monitoring)
+<br>
 -Redis (Message Broker)
+<br>
 -Postgres (Database)

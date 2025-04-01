@@ -9,7 +9,7 @@ rectangle Sources as "Data Source(s)"
 rectangle ETL as "Airflow"
 database DW as "PostgreSQL"
 rectangle BI as "Tableau"
-rectangle ML as "Databricks"
+rectangle ML as "Spark"
 
 Sources ---> ETL : "ETL DAGs"
 ETL ---> DW : "Preprocessing & Analysis"
