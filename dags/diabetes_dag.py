@@ -8,9 +8,11 @@ import os
 import logging
 import psycopg2
 import gc
+import psutil
 
 logging.basicConfig(level=logging.INFO)
 logging.info("DAG Start")
+logging.info(f"Memory usage before insert: {psutil.virtual_memory().percent}%")
 
 # PostgreSQL connection details
 POSTGRES_CONN_ID = "airflow_db"
@@ -76,12 +78,10 @@ def load_csv_to_postgres():
 
                 # Merge unique rows
                 merge_query = f"""
-                INSERT INTO {table_name}
-                SELECT * FROM {temp_table}
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM {table_name} t
-                    WHERE t.id = {temp_table}.id
-                );
+                INSERT INTO {table_name} ({', '.join(quoted_columns)})
+                SELECT {', '.join(quoted_columns)}
+                FROM {temp_table}
+                ON CONFLICT DO NOTHING;
                 """
                 cursor.execute(merge_query)
                 conn.commit()
@@ -103,8 +103,9 @@ def load_csv_to_postgres():
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
-    "start_date": datetime(2024, 3, 9),
+    "start_date": days_ago(1),
     "retries": 1,
+    "execution_timeout": timedelta(hours=3),
 }
 
 dag = DAG(
